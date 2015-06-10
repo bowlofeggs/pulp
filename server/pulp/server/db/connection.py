@@ -54,6 +54,7 @@ def initialize(name=None, seeds=None, max_pool_size=None, replica_set=None, max_
                 connection_kwargs.update({'host': seed[0], 'port': int(seed[1])})
             else:
                 connection_kwargs.update({'host': seed[0]})
+        connection_kwargs['host'] = 'mongodb://localhost:27017,localhost:27018,localhost:27019'
 
         if max_pool_size is None:
             # we may want to make this configurable, but then again, we may not
@@ -65,7 +66,9 @@ def initialize(name=None, seeds=None, max_pool_size=None, replica_set=None, max_
                 replica_set = config.config.get('database', 'replica_set')
 
         if replica_set is not None:
-            connection_kwargs['replicaset'] = replica_set
+            connection_kwargs['replicaSet'] = replica_set
+            import pymongo
+            connection_kwargs['read_preference'] = pymongo.read_preferences.ReadPreference.PRIMARY_PREFERRED
 
         # Process SSL settings
         if config.config.getboolean('database', 'ssl'):
@@ -196,8 +199,8 @@ class PulpCollection(Collection):
     def __init__(self, database, name, create=False, **kwargs):
         super(PulpCollection, self).__init__(database, name, create=create, **kwargs)
 
-        for m in self._decorated_methods:
-            setattr(self, m, retry_decorator(self.full_name)(getattr(self, m)))
+        #for m in self._decorated_methods:
+        #    setattr(self, m, retry_decorator(self.full_name)(getattr(self, m)))
 
     def __getstate__(self):
         return {'name': self.name}

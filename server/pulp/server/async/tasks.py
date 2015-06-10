@@ -52,17 +52,18 @@ def _queue_reserved_task(name, task_id, resource_id, inner_args, inner_kwargs):
 
     :return: None
     """
+    import pymongo
     while True:
         try:
             worker = resources.get_worker_for_reservation(resource_id)
-        except NoWorkers:
+        except (pymongo.errors.AutoReconnect, NoWorkers):
             pass
         else:
             break
 
         try:
             worker = resources.get_unreserved_worker()
-        except NoWorkers:
+        except (pymongo.errors.AutoReconnect, NoWorkers):
             pass
         else:
             break
@@ -70,7 +71,19 @@ def _queue_reserved_task(name, task_id, resource_id, inner_args, inner_kwargs):
         # No worker is ready for this work, so we need to wait
         time.sleep(0.25)
 
-    ReservedResource(task_id, worker['name'], resource_id).save()
+    try:
+        ReservedResource(task_id, worker['name'], resource_id).save()
+    except pymongo.errors.AutoReconnect:
+        import time
+        failed = True
+        while failed:
+            logger.info('Sleeping for 1')
+            time.sleep(1)
+            try:
+                ReservedResource(task_id, worker['name'], resource_id).save()
+                failed = False
+            except pymongo.errors.AutoReconnect:
+                pass
 
     inner_kwargs['routing_key'] = worker.name
     inner_kwargs['exchange'] = DEDICATED_QUEUE_EXCHANGE

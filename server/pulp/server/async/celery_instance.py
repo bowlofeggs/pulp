@@ -56,6 +56,8 @@ def create_mongo_config():
     if config.has_option('database', 'username') and config.has_option('database', 'password'):
         mongo_config['user'] = config.get('database', 'username')
         mongo_config['password'] = config.get('database', 'password')
+    if config.has_option('database', 'replica_set'):
+        mongo_config['replicaSet'] = config.get('database', 'replica_set')
     if config.getboolean('database', 'ssl'):
         mongo_config['ssl'] = True
         ssl_keyfile = config.get('database', 'ssl_keyfile')
