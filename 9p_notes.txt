@@ -1,0 +1,14 @@
+Use 9p instead of NFS: https://github.com/pradels/vagrant-libvirt#synced-folders
+
+# Allow qemu to access the cachier plugin
+sudo semanage fcontext -a -t svirt_home_t '/home/rbarlow/.vagrant.d/cache(/.*)?'
+
+# Allow qemu to access the code
+sudo semanage fcontext -a -t svirt_home_t '/home/rbarlow/devel(/.*)?'
+sudo restorecon -R -v /home/rbarlow/devel
+# In case you have some system_u files in place from running Pulp on the host in the past (egg info)
+sudo chcon -R -u unconfined_u /home/rbarlow/devel
+
+# Make facls to allow qemu to access the code
+sudo setfacl -R -d -m u:qemu:rwx /home/rbarlow/devel
+sudo setfacl -R -m u:qemu:rwx /home/rbarlow/devel

@@ -8,8 +8,8 @@
       - dnf
       - deltarpm
 
-- name: System update
-  dnf: name=* state=latest
+#- name: System update
+#  dnf: name=* state=latest
 
 - name: Install packages
   dnf: name={{ item }} state=present
