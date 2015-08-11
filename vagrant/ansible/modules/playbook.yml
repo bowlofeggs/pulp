@@ -5,9 +5,14 @@
   roles:
     - core
 
-- hosts: dev
+- hosts: db
   sudo: true
   vars:
   roles:
     - db
+
+- hosts: dev
+  sudo: true
+  vars:
+  roles:
     - dev

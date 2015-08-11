@@ -1,0 +1,38 @@
+---
+:domain: example.com
+:network: 192.168.123.0/24
+:image: fedora-22
+:cpus: ''
+:memory: ''
+:boxurlprefix: ''
+:sync: nfs
+:folder: vagrant
+:extern: []
+:puppet: false
+:classes: []
+:shell:
+- setup/setup.sh
+:docker: false
+:kubernetes: false
+:ansible: []
+:playbook:
+- playbook.yml
+:ansible_extras: {}
+:cachier: false
+:vms:
+- :name: dev
+  :memory: 2048
+  :ansible:
+  - db
+  - dev
+  :cpus: 4
+:namespace: dev
+:count: 0
+:username: ''
+:password: ''
+:poolid: true
+:repos: []
+:update: false
+:nested: false
+:comment: ''
+:reallyrm: nil
